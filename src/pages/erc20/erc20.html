@@ -12,37 +12,29 @@
 
 <ion-content padding>
   <div class="wrap">
-    <div class="item symbol">
-      <div class="label"><span>币种简称</span><span>（大写英文字母）</span></div>
-      <div class="input">
-        <input type="text" placeholder="MOAC" />
-      </div>
-    </div>
-    <div class="item name">
-      <div class="label"><span>币种全称</span><span>（大小写英文字母）</span></div>
-      <div class="input">
-        <input type="text" placeholder="Moac" />
-      </div>
-    </div>
-    <div class="item supply">
-      <div class="label"><span>总供应量</span><span>（数字）</span></div>
-      <div class="input">
-        <input type="number" placeholder="100000000" />
-      </div>
-    </div>
-    <div class="item decimals">
-      <div class="label"><span>精度</span><span>（数字）</span></div>
-      <div class="input">
-        <input type="number" placeholder="18" />
-      </div>
-    </div>
-    <div class="item logo">
-      <div class="label">
+    <ion-item class="symbol" no-lines>
+      <ion-label stacked><span>币种简称</span><span>（大写英文字母）</span></ion-label>
+      <ion-input type="text" placeholder="MOAC"></ion-input>
+    </ion-item>
+    <ion-item class="name" no-lines>
+      <ion-label stacked><span>币种全称</span><span>（大小写英文字母）</span></ion-label>
+      <ion-input type="text" placeholder="Moac"></ion-input>
+    </ion-item>
+    <ion-item class="supply" no-lines>
+      <ion-label stacked><span>总供应量</span><span>（数字）</span></ion-label>
+      <ion-input type="number" placeholder="100000000"></ion-input>
+    </ion-item>
+    <ion-item class="decimals" no-lines>
+      <ion-label stacked><span>精度</span><span>（数字）</span></ion-label>
+      <ion-input type="number" placeholder="18"></ion-input>
+    </ion-item>
+    <ion-item class="logo" no-lines>
+      <div>
         <span>图标</span>
       </div>
-      <div class="input">
-        <button>
-          <div class="upload">
+      <div class="upload">
+        <button ion-button round outline>
+          <div class="icon">
             <ion-icon name="add"></ion-icon>
           </div>
           <div class="img">
@@ -55,12 +47,14 @@
           <p></p>
         </div>
       </div>
-    </div>
+    </ion-item>
   </div>
   <div class="submit">
-    <button>
-      <span>立即定制</span>
-      <span>预估价格</span>
+    <button ion-button round>
+      <div class="button-wrap">
+        <span>立即定制</span>
+        <span>预估价格</span>
+      </div>
     </button>
   </div>
 </ion-content>

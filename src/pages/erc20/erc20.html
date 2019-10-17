@@ -5,14 +5,62 @@
   Ionic pages and navigation.
 -->
 <ion-header>
-
   <ion-navbar>
     <ion-title>erc20</ion-title>
   </ion-navbar>
-
 </ion-header>
 
-
 <ion-content padding>
-
+  <div class="wrap">
+    <div class="item symbol">
+      <div class="label"><span>币种简称</span><span>（大写英文字母）</span></div>
+      <div class="input">
+        <input type="text" placeholder="MOAC" />
+      </div>
+    </div>
+    <div class="item name">
+      <div class="label"><span>币种全称</span><span>（大小写英文字母）</span></div>
+      <div class="input">
+        <input type="text" placeholder="Moac" />
+      </div>
+    </div>
+    <div class="item supply">
+      <div class="label"><span>总供应量</span><span>（数字）</span></div>
+      <div class="input">
+        <input type="number" placeholder="100000000" />
+      </div>
+    </div>
+    <div class="item decimals">
+      <div class="label"><span>精度</span><span>（数字）</span></div>
+      <div class="input">
+        <input type="number" placeholder="18" />
+      </div>
+    </div>
+    <div class="item logo">
+      <div class="label">
+        <span>图标</span>
+      </div>
+      <div class="input">
+        <button>
+          <div class="upload">
+            <ion-icon name="add"></ion-icon>
+          </div>
+          <div class="img">
+            <img src="" alt="" />
+          </div>
+        </button>
+        <div class="tips">
+          <p>1. 支持png、jpeg格式，尺寸为140*140像素；</p>
+          <p>2. 图标应放置在图片中央，周围不要有文字。</p>
+          <p></p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="submit">
+    <button>
+      <span>立即定制</span>
+      <span>预估价格</span>
+    </button>
+  </div>
 </ion-content>

@@ -1,37 +1,37 @@
-import { Component } from '@angular/core';
-import { ToastController } from 'ionic-angular';
+import { Component } from "@angular/core";
+import { ToastController } from "ionic-angular";
 import { Storage } from "@ionic/storage";
-import { WalletProvider } from '../../providers/wallet';
-import VConsole from 'vconsole';
+import { WalletProvider } from "../../providers/wallet";
+import VConsole from "vconsole";
 // var vConsole = new VConsole();
 @Component({
-  templateUrl: 'tabs.html'
+  templateUrl: "tabs.html",
 })
 export class TabsPage {
+  tab1Root = "AssetPage";
+  tab2Root = "Erc20Page";
+  tab4Root = "MePage";
+  address: string = "";
+  system: string = "";
 
-  tab1Root = 'AssetPage';
-  tab4Root = 'MePage';
-  address: string = '';
-  system: string = '';
-
-  constructor(private storage: Storage,
+  constructor(
+    private storage: Storage,
     private toastCtrl: ToastController,
-    public walletProvider: WalletProvider, ) {
-
-  }
+    public walletProvider: WalletProvider,
+  ) {}
 
   ionViewDidLoad() {
-    console.log('enter tabs ...');
+    console.log("enter tabs ...");
     // this.subscribe();
   }
   async subscribe() {
-    this.storage.get('user').then((user) => {
+    this.storage.get("user").then(user => {
       if (user) {
         this.address = user.address;
         this.system = user.system;
         let that = this;
         // 订阅消息
-        this.walletProvider.subscribe(user.address, function (err, data) {
+        this.walletProvider.subscribe(user.address, function(err, data) {
           console.dir(err);
           console.dir(data);
           that.presentToast(data);
@@ -44,8 +44,8 @@ export class TabsPage {
     let toast = this.toastCtrl.create({
       message: msg,
       duration: 4000,
-      position: 'top',
-      cssClass: 'error'
+      position: "top",
+      cssClass: "error",
     });
 
     // toast.onDidDismiss(() => {

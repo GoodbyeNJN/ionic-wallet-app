@@ -17,12 +17,12 @@ page-erc20 {
       .wrap {
         display: flex;
         flex-direction: column;
-        height: 55rem;
-        padding: 1rem;
+        height: 50rem;
+        padding: 0 1rem;
 
         ion-item {
           // flex: 1 1 7rem;
-          margin-top: 1.5rem;
+          margin-top: 1rem;
           padding-left: 0;
 
           .item-inner {
@@ -56,11 +56,11 @@ page-erc20 {
         }
 
         ion-item:nth-child(1) {
-          margin-top: auto;
+          margin-top: 0;
         }
 
         .logo {
-          flex-grow: 2;
+          // flex-grow: 2;
 
           .upload {
             display: flex;

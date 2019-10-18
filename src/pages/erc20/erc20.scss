@@ -17,7 +17,7 @@ page-erc20 {
       .wrap {
         display: flex;
         flex-direction: column;
-        height: 49rem;
+        height: 55rem;
         padding: 1rem;
 
         ion-item {
@@ -64,7 +64,7 @@ page-erc20 {
 
           .upload {
             display: flex;
-            justify-content: space-between;
+            // justify-content: space-between;
             align-items: center;
             padding: 0.5rem 2rem;
 
@@ -82,9 +82,24 @@ page-erc20 {
               }
             }
 
-            .tips {
-              color: gray;
+            .example {
+              display: flex;
+              align-items: center;
+              margin-left: 5rem;
+
+              span {
+                color: gray;
+              }
+
+              img {
+                width: calc(140px * 0.4);
+                height: calc(140px * 0.4);
+              }
             }
+          }
+          .tips {
+            margin-top: 0.5rem;
+            color: gray;
           }
         }
       }

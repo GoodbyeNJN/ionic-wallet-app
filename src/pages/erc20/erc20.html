@@ -1,8 +1,8 @@
 <!--
-  Generated template for the Erc20Page page.
+    Generated template for the Erc20Page page.
 
-  See http://ionicframework.com/docs/components/#navigation for more info on
-  Ionic pages and navigation.
+    See http://ionicframework.com/docs/components/#navigation for more info on
+    Ionic pages and navigation.
 -->
 <ion-header>
   <ion-navbar>
@@ -11,53 +11,59 @@
 </ion-header>
 
 <ion-content padding>
-  <div class="wrap">
-    <ion-item class="symbol">
-      <ion-label stacked><span>币种简称</span><span>（大写英文字母）</span></ion-label>
-      <ion-input type="text" placeholder="MOAC"></ion-input>
-    </ion-item>
-    <ion-item class="name">
-      <ion-label stacked><span>币种全称</span><span>（大小写英文字母）</span></ion-label>
-      <ion-input type="text" placeholder="Moac"></ion-input>
-    </ion-item>
-    <ion-item class="supply">
-      <ion-label stacked><span>总供应量</span><span>（数字）</span></ion-label>
-      <ion-input type="number" placeholder="100000000"></ion-input>
-    </ion-item>
-    <ion-item class="decimals">
-      <ion-label stacked><span>精度</span><span>（数字）</span></ion-label>
-      <ion-input type="number" placeholder="18"></ion-input>
-    </ion-item>
-    <ion-item class="logo" no-lines>
-      <div>
-        <span>图标</span>
-      </div>
-      <div class="upload">
-        <button ion-button round outline>
-          <div class="icon">
-            <ion-icon name="add"></ion-icon>
-          </div>
-          <div class="img">
-            <img src="" alt="" />
-          </div>
-        </button>
-        <div class="example">
-          <span>示例：</span>
-          <img src="../../assets/imgs/coin-logo-moac.png" />
+  <form [formGroup]="formGroup" (ngSubmit)="submit(formGroup.value)" novalidate>
+    <div class="wrap">
+      <ion-item class="symbol">
+        <ion-label stacked><span>币种简称</span><span>（大写英文字母）</span></ion-label>
+        <ion-input type="text" placeholder="MOAC" [formControl]="formData.symbol"></ion-input>
+      </ion-item>
+      <ion-item class="name">
+        <ion-label stacked><span>币种全称</span><span>（大小写英文字母）</span></ion-label>
+        <ion-input type="text" placeholder="Moac" [formControl]="formData.name"></ion-input>
+      </ion-item>
+      <ion-item class="supply">
+        <ion-label stacked><span>总供应量</span><span>（数字）</span></ion-label>
+        <ion-input
+          type="number"
+          placeholder="100000000"
+          [formControl]="formData.supply"
+        ></ion-input>
+      </ion-item>
+      <ion-item class="decimals">
+        <ion-label stacked><span>精度</span><span>（数字）</span></ion-label>
+        <ion-input type="number" placeholder="18" [formControl]="formData.decimals"></ion-input>
+      </ion-item>
+      <ion-item class="logo" no-lines>
+        <div>
+          <span>图标</span>
         </div>
-      </div>
-      <div class="tips">
-        <p>1. 支持png、jpeg格式，尺寸为140*140像素；</p>
-        <p>2. 图标应放置在图片中央，周围不要有文字。</p>
-      </div>
-    </ion-item>
-  </div>
-  <div class="submit">
-    <button ion-button round>
-      <div class="button-wrap">
-        <span>立即定制</span>
-        <span>预估价格</span>
-      </div>
-    </button>
-  </div>
+        <div class="upload">
+          <button ion-button round outline type="button" (click)="chooseLogo()">
+            <div class="icon" *ngIf="!logo">
+              <ion-icon name="add"></ion-icon>
+            </div>
+            <div class="img" *ngIf="logo">
+              <img [src]="logo.url" />
+            </div>
+          </button>
+          <div class="example">
+            <span>示例：</span>
+            <img src="../../assets/imgs/coin-logo-moac.png" />
+          </div>
+        </div>
+        <div class="tips">
+          <p>1. 支持png、jpeg格式，尺寸为140*140像素；</p>
+          <p>2. 图标应放置在图片中央，周围不要有文字。</p>
+        </div>
+      </ion-item>
+    </div>
+    <div class="submit">
+      <button ion-button round type="submit" [disabled]="!(formGroup.valid && logo)">
+        <div class="button-wrap">
+          <span>立即定制</span>
+          <span>预估价格</span>
+        </div>
+      </button>
+    </div>
+  </form>
 </ion-content>

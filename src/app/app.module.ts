@@ -19,6 +19,8 @@ import { AppAvailability } from "@ionic-native/app-availability";
 import { FileTransfer } from "@ionic-native/file-transfer";
 import { Camera } from "@ionic-native/camera";
 import { Crop } from "@ionic-native/crop";
+import { AppVersion } from "@ionic-native/app-version";
+import { InAppBrowser } from "@ionic-native/in-app-browser";
 
 @NgModule({
   declarations: [MyApp, TabsPage],
@@ -59,6 +61,8 @@ import { Crop } from "@ionic-native/crop";
     FileTransfer,
     Camera,
     Crop,
+    AppVersion,
+    InAppBrowser,
     { provide: ErrorHandler, useClass: IonicErrorHandler },
   ],
 })

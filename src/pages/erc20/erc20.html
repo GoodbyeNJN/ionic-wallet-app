@@ -14,12 +14,16 @@
   <form [formGroup]="formGroup" (ngSubmit)="submit(formGroup.value)" novalidate>
     <div class="wrap">
       <ion-item class="symbol">
-        <ion-label stacked><span>币种简称</span><span>（大写英文字母）</span></ion-label>
-        <ion-input type="text" placeholder="MOAC" [formControl]="formData.symbol"></ion-input>
+        <ion-label stacked
+          ><span>币种简称</span><span>（大写英文字母或数字，第一位必须为字母）</span></ion-label
+        >
+        <ion-input type="text" placeholder="ERC20" [formControl]="formData.symbol"></ion-input>
       </ion-item>
       <ion-item class="name">
-        <ion-label stacked><span>币种全称</span><span>（大小写英文字母）</span></ion-label>
-        <ion-input type="text" placeholder="Moac" [formControl]="formData.name"></ion-input>
+        <ion-label stacked
+          ><span>币种全称</span><span>（大小写英文字母或数字，第一位必须为字母）</span></ion-label
+        >
+        <ion-input type="text" placeholder="Erc20" [formControl]="formData.name"></ion-input>
       </ion-item>
       <ion-item class="supply">
         <ion-label stacked><span>总供应量</span><span>（数字）</span></ion-label>

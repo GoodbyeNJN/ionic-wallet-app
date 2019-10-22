@@ -19,6 +19,8 @@ import {
   FileUploadResult,
 } from "@ionic-native/file-transfer";
 
+import { HttpClient, HttpParams, HttpHeaders } from "@angular/common/http";
+
 import Chain3 from "chain3";
 import { abi, bytecode } from "../../tokens/20/contract.js";
 
@@ -51,12 +53,14 @@ export class Erc20Page extends BaseUI {
   public chain3: Chain3;
 
   public node = "http://testnode.moacchina.info/";
-  public api = "http://192.168.1.5:3005/api/up";
+  public uploadLogoApi = "http://192.168.199.14:3005/api/up";
+  public getLogoUrlApi = "http://192.168.199.14:3005/api/find";
 
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
     private storage: Storage,
+    private httpClient: HttpClient,
     private alertCtrl: AlertController,
     private loadingCtrl: LoadingController,
     private toastCtrl: ToastController,
@@ -66,6 +70,15 @@ export class Erc20Page extends BaseUI {
     private fileTransfer: FileTransfer,
   ) {
     super();
+
+    this.storage
+      .get("user")
+      .then(user => {
+        this.user = user;
+      })
+      .catch(err => {
+        console.log("getStorage: err", err);
+      });
 
     this.chain3 = new Chain3(new Chain3.providers.HttpProvider(this.node));
 
@@ -104,14 +117,23 @@ export class Erc20Page extends BaseUI {
     };
 
     const transfer: FileTransferObject = this.fileTransfer.create();
-    return transfer.upload(this.logo.fileUri, this.api, options);
+    return transfer.upload(this.logo.fileUri, this.uploadLogoApi, options);
+  }
+
+  async getLogoUrl(contractAddress: string) {
+    const params = new HttpParams().set("contractAddress", contractAddress);
+    this.httpClient.get(this.getLogoUrlApi, { params }).subscribe(data => {
+      console.log("getLogoUrl: data", data);
+    });
   }
 
   async storeContractInfo(
     owner: string,
     contractAddress: string,
+    logoUrl: string,
     params: { symbol: string; name: string; supply: number; decimals: number },
   ) {
+    const { symbol, name, supply, decimals } = params;
     const value = {
       ...params,
       owner: { address: owner },
@@ -133,6 +155,79 @@ export class Erc20Page extends BaseUI {
       erc20.push(value);
     }
     this.storage.set("erc20", erc20);
+
+    let tokens: {
+      ERC20: {
+        [symbol: string]: {
+          flag: boolean;
+          symbol: string;
+          icon: string;
+          address: string;
+          decimals: number;
+        };
+      };
+      ERC721: {
+        [symbol: string]: {
+          flag: boolean;
+          symbol: string;
+          icon: string;
+          address: string;
+          decimals: number;
+        };
+      };
+      ERC20_ABI: {}[];
+      ERC721_ABI: {}[];
+    } = await this.storage.get("tokens");
+
+    if (!tokens) {
+      tokens = {
+        ERC20: {
+          [symbol]: {
+            flag: true,
+            symbol,
+            icon: logoUrl,
+            address: contractAddress,
+            decimals,
+          },
+        },
+        ERC721: null,
+        ERC20_ABI: abi,
+        ERC721_ABI: [],
+      };
+      this.storage.set("tokens", tokens);
+      return;
+    }
+
+    let { ERC20, ERC721, ERC20_ABI, ERC721_ABI } = tokens;
+
+    if (Object.keys(ERC20).length === 0) {
+      ERC20 = {
+        [symbol]: {
+          flag: true,
+          symbol,
+          icon: logoUrl,
+          address: contractAddress,
+          decimals,
+        },
+      };
+    } else {
+      ERC20 = {
+        ...ERC20,
+        [symbol]: {
+          flag: true,
+          symbol,
+          icon: logoUrl,
+          address: contractAddress,
+          decimals,
+        },
+      };
+    }
+
+    if (ERC20_ABI.length === 0) {
+      ERC20_ABI = [...abi];
+    }
+
+    this.storage.set("tokens", { ERC20, ERC721, ERC20_ABI, ERC721_ABI });
   }
 
   deployContract(
@@ -191,7 +286,7 @@ export class Erc20Page extends BaseUI {
         const currentTime: number = Date.now();
 
         if (currentBlockNumber - blockNumber >= blockInterval) {
-          resolve();
+          resolve(currentBlockNumber);
           return;
         }
 
@@ -237,7 +332,7 @@ export class Erc20Page extends BaseUI {
   }
 
   checkBalance(address: string, threshold: number) {
-    const balance = this.chain3.getBalance(address);
+    const balance = this.chain3.mc.getBalance(address);
     if (balance > threshold) {
       return true;
     } else {
@@ -320,10 +415,9 @@ export class Erc20Page extends BaseUI {
   }
 
   async submitHandle(
-    data,
+    data: { password: string },
     params: { symbol: string; name: string; supply: number; decimals: number },
   ) {
-    console.log("handle: data", data);
     const { address, mnemonic, name, pwd, secret } = this.user;
 
     if (Md5.hashStr(data.password) !== pwd) {
@@ -337,8 +431,13 @@ export class Erc20Page extends BaseUI {
     let contractAddress: string;
     try {
       const transactionHash = await this.deployContract(address, privateKey, params);
-      await this.waitBlockNumber(5, 90);
+      console.log("deploy complete: transactionHash", transactionHash);
+
+      const blockNumber = await this.waitBlockNumber(3, 90);
+      console.log("wait block number complete: blockNumber", blockNumber);
+
       contractAddress = this.getContractAddress(transactionHash);
+      console.log("get contract address complete: contractAddress", contractAddress);
     } catch (err) {
       console.log("submitHandle: err1", err);
       loading.dismiss().catch();
@@ -354,9 +453,14 @@ export class Erc20Page extends BaseUI {
 
     try {
       const res = await this.uploadLogo(address, contractAddress, params);
-      this.storeContractInfo(address, contractAddress, params);
+      const { data } = JSON.parse(res.response);
+      console.log("upload logo complete: response data", data);
+
+      await this.storeContractInfo(address, contractAddress, data.url, params);
+
       loading.dismiss().catch();
       this.showAlert("部署成功", "ERC20合约部署成功，合约地址为：" + contractAddress + "。");
+      this.formGroup.reset();
     } catch (err) {
       console.log("submitHandle: err2", err);
       loading.dismiss().catch();

@@ -19,10 +19,10 @@ import {
   FileUploadResult,
 } from "@ionic-native/file-transfer";
 
-import { HttpClient, HttpParams, HttpHeaders } from "@angular/common/http";
-
 import Chain3 from "chain3";
 import { abi, bytecode } from "../../tokens/20/contract.js";
+
+import { domain, api, rpcUrl } from "../../../config.js";
 
 import { Md5 } from "ts-md5/dist/md5";
 import { AppConfig } from "../../app/app.config";
@@ -52,15 +52,12 @@ export class Erc20Page extends BaseUI {
 
   public chain3: Chain3;
 
-  public node = "http://testnode.moacchina.info/";
-  public uploadLogoApi = "http://192.168.199.14:3005/api/up";
-  public getLogoUrlApi = "http://192.168.199.14:3005/api/find";
+  public uploadLogoApi: string = domain + api.upload;
 
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
     private storage: Storage,
-    private httpClient: HttpClient,
     private alertCtrl: AlertController,
     private loadingCtrl: LoadingController,
     private toastCtrl: ToastController,
@@ -80,11 +77,17 @@ export class Erc20Page extends BaseUI {
         console.log("getStorage: err", err);
       });
 
-    this.chain3 = new Chain3(new Chain3.providers.HttpProvider(this.node));
+    this.chain3 = new Chain3(new Chain3.providers.HttpProvider(rpcUrl));
 
     this.formGroup = this.formBuilder.group({
-      symbol: ["", Validators.compose([Validators.required, Validators.pattern("^[A-Z]+$")])],
-      name: ["", Validators.compose([Validators.required, Validators.pattern("^[A-Za-z]+$")])],
+      symbol: [
+        "",
+        Validators.compose([Validators.required, Validators.pattern("^[A-Z]+[A-Z0-9]$")]),
+      ],
+      name: [
+        "",
+        Validators.compose([Validators.required, Validators.pattern("^[A-Za-z]+[A-Za-z0-9]$")]),
+      ],
       supply: ["", Validators.compose([Validators.required, Validators.pattern("^[1-9][0-9]*$")])],
       decimals: [
         "",
@@ -118,13 +121,6 @@ export class Erc20Page extends BaseUI {
 
     const transfer: FileTransferObject = this.fileTransfer.create();
     return transfer.upload(this.logo.fileUri, this.uploadLogoApi, options);
-  }
-
-  async getLogoUrl(contractAddress: string) {
-    const params = new HttpParams().set("contractAddress", contractAddress);
-    this.httpClient.get(this.getLogoUrlApi, { params }).subscribe(data => {
-      console.log("getLogoUrl: data", data);
-    });
   }
 
   async storeContractInfo(
@@ -341,34 +337,37 @@ export class Erc20Page extends BaseUI {
   }
 
   async chooseLogo() {
-    const options: CameraOptions = {
+    const getOptions: CameraOptions = {
       quality: 100,
       destinationType: this.camera.DestinationType.FILE_URI,
-      encodingType: this.camera.EncodingType.JPEG,
+      encodingType: this.camera.EncodingType.PNG,
       mediaType: this.camera.MediaType.PICTURE,
       sourceType: this.camera.PictureSourceType.PHOTOLIBRARY,
+      allowEdit: true,
+      targetHeight: 140,
+      targetWidth: 140,
     };
 
     try {
-      const fileUri: string = await this.camera.getPicture(options);
-      // console.log("fileUri", fileUri);
+      const fileUri: string = await this.camera.getPicture(getOptions);
+      console.log("fileUri", fileUri);
 
-      const croppedUri: string = await this.crop.crop(fileUri, {
-        quality: 100,
-        targetHeight: 140,
-        targetWidth: 140,
-      });
+      // const croppedUri: string = await this.crop.crop(fileUri, {
+      //   quality: 100,
+      //   targetHeight: 140,
+      //   targetWidth: 140,
+      // });
       // console.log("cropped", croppedUri);
 
       let win: any = window; // hack compilator
-      const fileUrl = win.Ionic.WebView.convertFileSrc(croppedUri);
-      // console.log("url", fileUrl);
+      const fileUrl = win.Ionic.WebView.convertFileSrc(fileUri);
+      console.log("url", fileUrl);
 
-      const filePattern = croppedUri.split("?")[0].split("/");
+      const filePattern = fileUri.split("?")[0].split("/");
       const fileName = filePattern[filePattern.length - 1];
-      // console.log("fileName", fileName);
+      console.log("fileName", fileName);
 
-      this.logo = { url: fileUrl, fileUri: croppedUri, fileName: fileName };
+      this.logo = { url: fileUrl, fileUri: fileUri, fileName: fileName };
     } catch (err) {
       console.log("chooseLogo: err", err);
     }
@@ -433,7 +432,7 @@ export class Erc20Page extends BaseUI {
       const transactionHash = await this.deployContract(address, privateKey, params);
       console.log("deploy complete: transactionHash", transactionHash);
 
-      const blockNumber = await this.waitBlockNumber(3, 90);
+      const blockNumber = await this.waitBlockNumber(5, 90);
       console.log("wait block number complete: blockNumber", blockNumber);
 
       contractAddress = this.getContractAddress(transactionHash);
@@ -452,7 +451,7 @@ export class Erc20Page extends BaseUI {
     }
 
     try {
-      const res = await this.uploadLogo(address, contractAddress, params);
+      const res: FileUploadResult = await this.uploadLogo(address, contractAddress, params);
       const { data } = JSON.parse(res.response);
       console.log("upload logo complete: response data", data);
 
